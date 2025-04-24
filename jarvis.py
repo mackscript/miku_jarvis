@@ -13,7 +13,7 @@ import os
 import subprocess
 import pywhatkit as kit
 import pyautogui
-
+ 
 from datetime import datetime, timedelta
 
 # Initialize the speech engine
@@ -97,7 +97,7 @@ def check_system_health():
 
 def open_whatsapp():
     try:
-        os.system("open -a WhatsApp")
+          webbrowser.open('https://web.whatsapp.com')  # Opens WhatsApp Web
     except Exception as e:
         print("Error opening WhatsApp:", e)
 
@@ -107,38 +107,98 @@ def ask_for_message():
     return message
 
 def send_whatsapp_message(command):
-    # Extract the name from the command (assuming the format "send message to <name>")
-   
+    # Extract the name from the command
     match = re.search(r"send message to (\w+)", command)
-
+    
     if match:
-        name = match.group(1)  # Extract the name (e.g., Nima)
+        name = match.group(1)
         
-        # Ask the user for the message they want to send
-        speak(f"What message would you like to send to {name}?")
-        message = take_command()  # Capture the full message
+        # Define phone numbers for contacts
+        contacts = {
+            "nima": "+918328708365",  # Remove spaces from phone number
+            "neema": "+918328708365", 
+            "priya": "+919830794080",
+            "Hehe": "Hehe 😁"
+            # Add more contacts here
+        }
+        
+        # Convert name to lowercase for case-insensitive comparison
+        if name.lower() in contacts:
+            phone_number = contacts[name.lower()]
+            
+            # Ask for the message
+            speak(f"What message would you like to send to {name}?")
+            message = take_command()
+            
+            if message:
+                try:
+                    # Open WhatsApp Web with the contact directly (no need to search)
+                    # Format: remove all spaces and special characters from phone number
+                    formatted_number = re.sub(r'[^0-9]', '', phone_number)
+                    whatsapp_url = f"https://web.whatsapp.com/send?phone={formatted_number}&text={message}"
+                    
+                    speak(f"Opening WhatsApp and preparing to send message to {name}.")
+                    webbrowser.open(whatsapp_url)
+                    
+                    # Wait for WhatsApp Web to load - adjust this time based on your internet speed
+                    # 10 seconds is usually enough with good internet
+                    speak("Waiting for WhatsApp to load...")
+                    time.sleep(10)  # Reduced to 10 seconds
+                    
+                    # Press Enter to send the message
+                    pyautogui.press('enter')
+                    speak(f"Message sent to {name} successfully.")
+                    return True
+                except Exception as e:
+                    print(f"Error sending message: {str(e)}")
+                    speak(f"I encountered an error when sending the message.")
+                    return False
+            else:
+                speak("I didn't hear a message. Please try again.")
+                return False
+        else:
+            speak(f"I don't have {name}'s contact information in my database.")
+            return False
+    return False
+
+
+def send_whatsapp_group_message(command):
+    # Extract group name from command
+    match = re.search(r"send message to group (\w+)", command)
+    
+    if match:
+        group_name = match.group(1)
+        
+        # Ask for the message
+        speak(f"What message would you like to send to the {group_name} group?")
+        message = take_command()
         
         if message:
-            # Use the actual phone number
-            phone_number = "+918328708365"  # Replace with the actual phone number
-            
-            # Get the current time
-            current_time = datetime.now()
-            
-            # Add 2 minutes to the current time (for example)
-            send_time = current_time + timedelta(seconds=20)
-            hour = send_time.hour
-            minute = send_time.minute
-            
-            # Send the WhatsApp message using pywhatkit
-            speak(f"Sending message to {name}: {message} at {hour}:{minute}.")
-            kit.sendwhatmsg(phone_number, message, hour, minute)  # Send at the specified time
-            
-            return True
+            try:
+                # Open WhatsApp Web
+                speak(f"Opening WhatsApp. Please navigate to the {group_name} group manually.")
+                webbrowser.open("https://web.whatsapp.com")
+                
+                # Wait for user to navigate to the group
+                speak("I'll wait 15 seconds for you to navigate to the group chat.")
+                time.sleep(15)
+                
+                # Type and send the message
+                pyautogui.typewrite(message)
+                time.sleep(1)
+                pyautogui.press('enter')
+                speak(f"Message sent to {group_name} group successfully.")
+                return True
+            except Exception as e:
+                print(f"Error sending message: {str(e)}")
+                speak(f"I encountered an error when sending the message.")
+                return False
         else:
             speak("I didn't hear a message. Please try again.")
             return False
     return False
+# Alternative approach using pyautogui for more direct control
+ 
 # Main function to run the assistant
 def run_jarvis():
     speak("Hello, I am Miku. How can I assist you today?")  # Introduce the assistant
@@ -169,7 +229,6 @@ def run_jarvis():
                 open_whatsapp()  # Launch WhatsApp
                 continue
 
-
         # Check if the user wants to send a message
         if "send message" in command:
             if send_whatsapp_message(command):
@@ -182,7 +241,7 @@ def run_jarvis():
 
         # Check for the time
         elif 'time' in command:
-            time = datetime.datetime.now().strftime('%I:%M %p')  # Get the current time
+            time = datetime.now().strftime('%I:%M %p')  # Get the current time
             speak(f"The time is {time}")
 
         # Check system health command
