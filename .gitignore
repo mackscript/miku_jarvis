@@ -1,17 +1,21 @@
-# Python bytecode
+# Bytecode
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
+*.pyd
 
-# Virtual environments
+# Virtual Envs
 venv/
-jarvis-env/
 myenv/
-tf-env/
+jarvis-env/
 venv-metal/
+tf-env/
 
-# VSCode settings
+# Model files (optional)
+*.h5
+
+# VS Code
 .vscode/
 
-# Model training checkpoints (optional)
-*.h5
+# OS files
+.DS_Store
