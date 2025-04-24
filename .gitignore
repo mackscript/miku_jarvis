@@ -1,10 +1,17 @@
-# Ignore virtual environments
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
 venv/
 jarvis-env/
 myenv/
 tf-env/
 venv-metal/
 
-# Ignore Python cache
-__pycache__/
-*.pyc
+# VSCode settings
+.vscode/
+
+# Model training checkpoints (optional)
+*.h5
