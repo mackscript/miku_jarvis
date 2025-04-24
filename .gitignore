@@ -1,21 +1,15 @@
-# Bytecode
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# Virtual Envs
+# Ignore environments
 venv/
 myenv/
 jarvis-env/
 venv-metal/
 tf-env/
 
-# Model files (optional)
+# Python junk
+__pycache__/
+*.py[cod]
 *.h5
 
-# VS Code
+# VSCode & OS
 .vscode/
-
-# OS files
 .DS_Store
