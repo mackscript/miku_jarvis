@@ -1,0 +1,10 @@
+# Ignore virtual environments
+venv/
+jarvis-env/
+myenv/
+tf-env/
+venv-metal/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
